@@ -93,9 +93,9 @@ class Command(BaseCommand):
         
         for team_affiliate in team_affiliates_data:
             TeamAffiliate.objects.create(
-                nba_team_id=team_affiliate['nba_team_id'],
+                nba_team_id=team_affiliate['nba_teamId'],
                 nba_abrv=team_affiliate['nba_abrv'],
-                glg_team_id=team_affiliate['glg_team_id'],
+                glg_team_id=team_affiliate['glg_teamId'],
                 glg_abrv=team_affiliate['glg_abrv']
             )
             
