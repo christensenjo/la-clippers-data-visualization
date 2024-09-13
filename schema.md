@@ -23,7 +23,7 @@ Primary key: game_id
 Column names:
 ['team_id', 'player_id', 'lineup_num', 'period', 'time_in', 'time_out', 'game_id']
 
-Primary key: team_id, player_id, lineup_num, period
+Primary key (unique constraint): team_id, player_id, lineup_num, period, game_id
 
 ```
       team_id  player_id  lineup_num  period  time_in  time_out  game_id
