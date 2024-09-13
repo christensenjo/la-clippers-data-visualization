@@ -15,12 +15,12 @@ class Command(BaseCommand):
         self.stdout.write('Starting data import...')
         
         functions = [
-            # self.load_teams,
+            self.load_teams,
             self.load_players,
-            # self.load_game_schedules,
-            # self.load_lineups,
+            self.load_game_schedules,
             self.load_rosters,
-            # self.load_team_affiliates
+            self.load_lineups,
+            self.load_team_affiliates
         ]
         
         for func in functions:
@@ -161,10 +161,29 @@ class Command(BaseCommand):
         except Exception as e:
             self.stderr.write(self.style.ERROR(f'Error loading roster.json: {str(e)}'))
 
+    # We handle the team affiliate data differently so that we can handle teams without a G League affiliate
     def load_team_affiliates(self):
-        self.load_data('team_affiliate.json', TeamAffiliate, {
-            'nba_team_id': 'nba_teamId',
-            'nba_abrv': 'nba_abrv',
-            'glg_team_id': 'glg_teamId',
-            'glg_abrv': 'glg_abrv'
-        })
+        file_path = os.path.join(settings.BASE_DIR, 'dev_test_data', 'team_affiliate.json')
+        self.stdout.write(f'Loading data from team_affiliate.json...')
+        
+        try:
+            with open(file_path, 'r') as f:
+                data = json.load(f)
+            
+            with transaction.atomic():
+                objects = []
+                for item in data:
+                    obj_data = {
+                        'nba_team_id': item['nba_teamId'],
+                        'nba_abrv': item['nba_abrv'],
+                        'glg_team_id': item['glg_teamId'] if item['glg_teamId'] else None,
+                        'glg_abrv': item['glg_abrv'] if item['glg_abrv'] else None
+                    }
+                    objects.append(TeamAffiliate(**obj_data))
+                
+                TeamAffiliate.objects.bulk_create(objects, ignore_conflicts=True)
+            
+            self.stdout.write(self.style.SUCCESS(f'Successfully loaded {len(objects)} TeamAffiliate objects'))
+        
+        except Exception as e:
+            self.stderr.write(self.style.ERROR(f'Error loading team_affiliate.json: {str(e)}'))

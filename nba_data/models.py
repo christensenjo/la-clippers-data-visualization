@@ -59,8 +59,8 @@ class Roster(models.Model):
 class TeamAffiliate(models.Model):
     nba_team = models.OneToOneField(Team, on_delete=models.CASCADE, primary_key=True)
     nba_abrv = models.CharField(max_length=3)
-    glg_team_id = models.BigIntegerField()
-    glg_abrv = models.CharField(max_length=3)
+    glg_team_id = models.BigIntegerField(null=True, blank=True)  # Not all NBA teams have a G League affiliate
+    glg_abrv = models.CharField(max_length=3, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.nba_abrv} - {self.glg_abrv}"
+        return f"{self.nba_abrv} - {self.glg_abrv or 'No G League Affiliate'}"
