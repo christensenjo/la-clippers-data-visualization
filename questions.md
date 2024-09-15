@@ -17,7 +17,7 @@ Q: **Please list the computer programs, full stack libraries, and other computat
 - Javascript: Learned JS in high school and have built multiple web applications across different fields.
 - Vue/Nuxt: Recently spent a year and a half at Maiden Voyage building web applications whose frontends were in Vue. Have built multiple Nuxt side projects in my free time.
 - Python: About half of my college courses at USU were in Python, and I've built a couple of web apps in Django. School experience with Pandas and numpy for scientific computing and machine learning.
-- Java: About the other half of my college courses at USU were in Java. I completed an internship at HealthCatalyst in a team building Java Spring Boot web apps.
+- Java: About the other half of my college courses at USU were in Java. I completed an internship at FamilySearch in a team building Java Spring Boot web apps.
 - PHP/Laravel: Learned PHP in high school and spent a year and a half at Maiden Voyage building full-stack web apps with Laravel backends.
 - Git version control
 - TailwindCSS
@@ -31,7 +31,7 @@ Q: **Please list the computer programs, full stack libraries, and other computat
 - Ubuntu / WSL2: Have developed in WSL2 environments both at school and during my time at Maiden Voyage.
 
 #### Some Exposure
-- React: I built the first version of my static portfolio website in React, and have recently been using Next.js to build a couple of side projects. Have been exposed to features such as RSCs, hooks, shadcn/ui, Clerk auth, Vercel, etc. 
+- React: I built the first version of my static portfolio website in React, and have recently been using Next.js to build a couple of side projects. Have been exposed to elements such as RSCs, hooks, shadcn/ui, Clerk auth, Vercel, etc. 
 - R: I took a class on R in college and used it to get NBA data for a data visualization project.
 - Go: I recently learned Golang and used it to build a simple REST API backend that performed CRUD on a PostgreSQL database.
 - C#: I completed an internship at HealthCatalyst building Azure Functions (lambdas) in C# as part of a complex data ingestion and transformation pipeline.
