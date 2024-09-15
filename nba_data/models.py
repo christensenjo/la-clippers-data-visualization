@@ -4,7 +4,7 @@ class Team(models.Model):
     team_id = models.BigIntegerField(primary_key=True)
     league_lk = models.CharField(max_length=3)
     team_name = models.CharField(max_length=100)
-    team_name_short = models.CharField(max_length=4)  # Changed from 3 to 4
+    team_name_short = models.CharField(max_length=4)
     team_nickname = models.CharField(max_length=50)
 
     def __str__(self):
@@ -39,7 +39,7 @@ class Lineup(models.Model):
     game = models.ForeignKey(GameSchedule, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = ('team', 'player', 'lineup_num', 'period', 'game')  # Added 'game'
+        unique_together = ('team', 'player', 'lineup_num', 'period', 'game')
 
     def __str__(self):
         return f"Lineup {self.lineup_num} for {self.team} in game {self.game_id}"

@@ -81,7 +81,6 @@ class Command(BaseCommand):
             with transaction.atomic():
                 objects = []
                 for item in data:
-                    # Convert the naive datetime to an aware datetime
                     naive_datetime = datetime.strptime(item['game_date'], '%Y-%m-%d %H:%M:%S')
                     aware_datetime = timezone.make_aware(naive_datetime, timezone=pytz.UTC)
                     
@@ -150,10 +149,7 @@ class Command(BaseCommand):
                     else:
                         self.stdout.write(self.style.WARNING(f'Skipping roster entry for team_id={team_id}, player_id={player_id} due to missing Team'))
                 
-                # Bulk create new players
                 Player.objects.bulk_create(new_players, ignore_conflicts=True)
-                
-                # Bulk create roster entries
                 Roster.objects.bulk_create(roster_objects, ignore_conflicts=True)
             
             self.stdout.write(self.style.SUCCESS(f'Successfully loaded {len(roster_objects)} Roster objects and created {len(new_players)} new Player objects'))
