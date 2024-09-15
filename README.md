@@ -14,9 +14,13 @@ pip install -r requirements.txt
 
 To run locally, create a `.env` file patterned after the `.env.example` file.
 ```
-DB_NAME=<lac_fullstack_dev>
-DB_USER=<your_username>
-DB_PASSWORD=<your_password>
-DB_HOST=localhost
-DB_PORT=5432
+POSTGRES_DB=lac_fullstack_dev
+POSTGRES_USER=<user>
+POSTGRES_PASSWORD=<password>
+POSTGRES_HOST=db
+POSTGRES_PORT=5432
+
+DJANGO_SUPERUSER_USERNAME=admin
+DJANGO_SUPERUSER_EMAIL=admin@example.com
+DJANGO_SUPERUSER_PASSWORD=changeme
 ```
