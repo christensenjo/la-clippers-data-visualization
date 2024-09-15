@@ -10,8 +10,8 @@ To run locally, create a `.env` file patterned after the `.env.example` file.
 
 ```
 POSTGRES_DB=lac_fullstack_dev
-POSTGRES_USER=<user>
-POSTGRES_PASSWORD=<password>
+POSTGRES_USER=user
+POSTGRES_PASSWORD=password
 POSTGRES_HOST=db
 POSTGRES_PORT=5432
 
