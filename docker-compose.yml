@@ -1,7 +1,7 @@
 services:
   web:
     build: .
-    command: ./entrypoint.sh
+    command: /app/entrypoint.sh
     volumes:
       - .:/app
       - ./dev_test_data:/app/dev_test_data
