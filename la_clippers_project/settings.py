@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_vite',
     'nba_data',
 ]
 
@@ -144,3 +145,14 @@ LOGGING = {
         'level': 'DEBUG',
     },
 }
+
+# Django-Vite
+DJANGO_VITE_ASSETS_PATH = BASE_DIR / "static" / "vue" / "dist"
+DJANGO_VITE_DEV_MODE = DEBUG
+DJANGO_VITE_DEV_SERVER_PORT = 5173  # Default Vite dev server port
+DJANGO_VITE_MANIFEST_PATH = BASE_DIR / "static" / "vue" / "dist" / "manifest.json"
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]

@@ -14,3 +14,7 @@ media/
 dev_test_data/original/
 dev_test_data/test/
 
+/static/vue/node_modules/
+/static/vue/dist/
+
+.DS_Store
