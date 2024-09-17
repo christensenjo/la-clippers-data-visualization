@@ -5,8 +5,10 @@ services:
     volumes:
       - .:/app
       - ./dev_test_data:/app/dev_test_data
+      - /app/static/vue/node_modules
     ports:
       - "8000:8000"
+      - "5173:5173"
     depends_on:
       - db
     env_file:

@@ -7,16 +7,20 @@ export default defineConfig({
   root: resolve('./src'),
   base: '/static/',
   server: {
-    host: 'localhost',
+    host: '0.0.0.0',
     port: 5173,
     open: false,
+    cors: {
+      origin: 'http://localhost:8000',
+      credentials: true,
+    },
     watch: {
       usePolling: true,
       disableGlobbing: false,
     },
   },
   build: {
-    outDir: resolve('../dist'),  // Changed this line
+    outDir: resolve('../dist'),
     assetsDir: '',
     manifest: true,
     emptyOutDir: true,

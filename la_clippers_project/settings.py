@@ -43,9 +43,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_vite',
     'nba_data',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -148,11 +150,22 @@ LOGGING = {
 
 # Django-Vite
 DJANGO_VITE_ASSETS_PATH = BASE_DIR / "static" / "vue" / "dist"
-DJANGO_VITE_DEV_MODE = DEBUG
-DJANGO_VITE_DEV_SERVER_PORT = 5173  # Default Vite dev server port
+DJANGO_VITE_DEV_MODE = True
+DJANGO_VITE_DEV_SERVER_PORT = 5173
+DJANGO_VITE_DEV_SERVER_PROTOCOL = 'http'
+DJANGO_VITE_DEV_SERVER_HOST = 'localhost'
 DJANGO_VITE_MANIFEST_PATH = BASE_DIR / "static" / "vue" / "dist" / "manifest.json"
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
+]
+
+# CORS settings
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://web:5173",
 ]

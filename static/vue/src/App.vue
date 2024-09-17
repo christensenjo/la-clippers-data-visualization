@@ -1,15 +1,13 @@
 <template>
   <div id="app">
     <h1>NBA Team Records</h1>
-    <p>any content here</p>
-    <!-- Add more components or content as needed -->
+    <p>testing</p>
   </div>
 </template>
 
 <script>
 export default {
   name: 'App',
-  // Add component logic, data, methods, etc. here
 }
 </script>
 
