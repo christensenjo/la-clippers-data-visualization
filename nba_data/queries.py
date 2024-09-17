@@ -6,30 +6,30 @@ from django.http import JsonResponse
 
 def get_team_records():
     return Team.objects.annotate(
-        games_played=Count('home_games') + Count('away_games'),
-        wins=Count(Case(
+        total_games_played=Count('home_games') + Count('away_games'),
+        total_wins=Count(Case(
             When(home_games__home_score__gt=F('home_games__away_score'), then=1),
             When(away_games__away_score__gt=F('away_games__home_score'), then=1),
         )),
-        losses=F('games_played') - F('wins'),
+        total_losses=F('total_games_played') - F('total_wins'),
         win_percentage=Case(
-            When(games_played=0, then=Value(0.0)),
-            default=F('wins') * 1.0 / F('games_played'),
+            When(total_games_played=0, then=Value(0.0)),
+            default=F('total_wins') * 1.0 / F('total_games_played'),
             output_field=FloatField()
         ),
-        home_games=Count('home_games'),
-        away_games=Count('away_games'),
+        total_home_games=Count('home_games'),
+        total_away_games=Count('away_games'),
         games_played_rank=Window(
             expression=DenseRank(),
-            order_by=F('games_played').desc()
+            order_by=F('total_games_played').desc()
         ),
         home_games_rank=Window(
             expression=DenseRank(),
-            order_by=F('home_games').desc()
+            order_by=F('total_home_games').desc()
         ),
         away_games_rank=Window(
             expression=DenseRank(),
-            order_by=F('away_games').desc()
+            order_by=F('total_away_games').desc()
         )
     ).order_by('-win_percentage')
 
@@ -177,7 +177,7 @@ def execute_raw_sql(sql):
 def team_records_api(request):
     records = get_team_records()
     data = list(records.values(
-        'team_name', 'games_played', 'wins', 'losses', 'win_percentage',
-        'home_games', 'away_games', 'games_played_rank', 'home_games_rank', 'away_games_rank'
+        'team_name', 'total_games_played', 'total_wins', 'total_losses', 'win_percentage',
+        'total_home_games', 'total_away_games', 'games_played_rank', 'home_games_rank', 'away_games_rank'
     ))
     return JsonResponse(data, safe=False)

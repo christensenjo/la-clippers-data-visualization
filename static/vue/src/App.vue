@@ -39,12 +39,12 @@
             <tbody>
               <tr v-for="record in teamRecords" :key="record.team_name" class="border-b">
                 <td class="px-4 py-2">{{ record.team_name }}</td>
-                <td class="px-4 py-2">{{ record.games_played }}</td>
-                <td class="px-4 py-2">{{ record.wins }}</td>
-                <td class="px-4 py-2">{{ record.losses }}</td>
+                <td class="px-4 py-2">{{ record.total_games_played }}</td>
+                <td class="px-4 py-2">{{ record.total_wins }}</td>
+                <td class="px-4 py-2">{{ record.total_losses }}</td>
                 <td class="px-4 py-2">{{ record.win_percentage.toFixed(3) }}</td>
-                <td class="px-4 py-2">{{ record.home_games }} ({{ record.home_games_rank }})</td>
-                <td class="px-4 py-2">{{ record.away_games }} ({{ record.away_games_rank }})</td>
+                <td class="px-4 py-2">{{ record.total_home_games }} ({{ record.home_games_rank }})</td>
+                <td class="px-4 py-2">{{ record.total_away_games }} ({{ record.away_games_rank }})</td>
                 <td class="px-4 py-2">{{ record.games_played_rank }}</td>
               </tr>
             </tbody>
