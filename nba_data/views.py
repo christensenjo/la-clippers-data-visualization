@@ -10,4 +10,8 @@ def index_view(request):
 
 def team_records_api(request):
     records = get_team_records()
-    return JsonResponse(list(records.values()), safe=False)
+    data = list(records.values(
+        'team_name', 'win_percentage', 'total_wins', 'total_losses',
+        'total_games_played', 'total_home_games', 'total_away_games'
+    ))
+    return JsonResponse(data, safe=False)
