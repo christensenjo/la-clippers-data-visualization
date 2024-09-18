@@ -6,6 +6,9 @@ See [questions.md](questions.md) for my responses to the questionaire.
 
 ## Run locally
 
+Start by cloning the repository.
+
+
 ### Setup .env
 
 To run locally, create a `.env` file patterned after the `.env.example` file.
