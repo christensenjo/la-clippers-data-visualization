@@ -6,7 +6,7 @@ See [questions.md](questions.md) for my responses to the questionaire.
 
 ## Run locally
 
-Start by cloning the repository.
+Start by cloning the repository [here](https://github.com/christensenjo/la-clippers-data-visualization/tree/main).
 
 
 ### Setup .env
