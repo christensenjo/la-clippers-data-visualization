@@ -76,8 +76,8 @@ I also see this position in the front office as an opportunity for me to continu
 ## Technical Questions
 
 1. **Database Creation**
-   a. My project is Dockerized. See instructions to run in the README.
-   b. The primary keys across the tables should be: 
+- My project is Dockerized. See instructions to run in the README.
+- The primary keys across the tables should be: 
     - team table: `team_id` BigIntegerField in Django
     - player table: `player_id` BigIntegerField in Django
     - game_schedule: `game_id` BigIntegerField in Django
@@ -85,8 +85,8 @@ I also see this position in the front office as an opportunity for me to continu
     - roster: Composite primary key of team, player. Again implemented using the unique_together constraint.
     - team_affiliate: nba_team. Implemented in Django model with a OneToOneField relation to Team model.
 2. **Basic Queries (SQL)**
-    a. I implemented this query in a Django ORM query. You can see it [here](https://github.com/christensenjo/la-clippers-data-visualization/blob/main/nba_data/queries.py).
-    b. Using Django backend and Vue frontend, I created an interactive table that displays the results of these queries. It can be sorted to rank teams by win %, home games, away games, and games played. It can also be filtered by month.
+    - I implemented this query via the Django ORM. You can see it [here](https://github.com/christensenjo/la-clippers-data-visualization/blob/main/nba_data/queries.py).
+    - Using the Django backend and Vue frontend, I created an interactive table that displays the results of these queries. It can be sorted to rank teams by win %, home games, away games, and games played. It can also be filtered by month.
 
 I ran out of time to complete Schedule Queries, Lineup Queries, and Visualizations. Despite that, I really enjoyed this project. I look forward to continuing to extend this application in my free time in the future. Perhaps I'll take the time to complete the remaining queries and visualizations, or add something of my own liking.
 
