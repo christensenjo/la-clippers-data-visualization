@@ -1,8 +1,12 @@
-from django.db.models import Count, F, Window, Case, When, Value, IntegerField, FloatField, Func
-from django.db.models.functions import DenseRank
+from django.db.models import Count, F, Window, Case, When, Value, IntegerField, FloatField, Func, Q
+from django.db.models.functions import DenseRank, Extract
 from .models import Team, GameSchedule
+
 from django.db import connection
 from django.http import JsonResponse
+import logging
+
+logger = logging.getLogger(__name__)
 
 def get_team_records():
     return Team.objects.annotate(
@@ -23,30 +27,31 @@ def get_team_records():
     ).filter(total_games_played__gt=0).order_by('-win_percentage')
 
 def get_team_records_for_month(year, month):
-    return Team.objects.annotate(
-        total_games_played=Count(Case(
-            When(home_games__game_date__year=year, home_games__game_date__month=month, then=1),
-            When(away_games__game_date__year=year, away_games__game_date__month=month, then=1),
-        )),
-        total_wins=Count(Case(
-            When(home_games__game_date__year=year, home_games__game_date__month=month, 
-                home_games__home_score__gt=F('home_games__away_score'), then=1),
-            When(away_games__game_date__year=year, away_games__game_date__month=month, 
-                away_games__away_score__gt=F('away_games__home_score'), then=1),
-        )),
+    logger.info(f"Querying records for year: {year}, month: {month}")
+    
+    records = Team.objects.annotate(
+        total_games_played=Count('home_games', filter=Q(home_games__game_date__year=year, home_games__game_date__month=month), distinct=True) + 
+                        Count('away_games', filter=Q(away_games__game_date__year=year, away_games__game_date__month=month), distinct=True),
+        total_wins=Count('home_games', filter=Q(home_games__game_date__year=year, 
+                                                home_games__game_date__month=month, 
+                                                home_games__home_score__gt=F('home_games__away_score')), distinct=True) + 
+                Count('away_games', filter=Q(away_games__game_date__year=year, 
+                                                away_games__game_date__month=month, 
+                                                away_games__away_score__gt=F('away_games__home_score')), distinct=True),
+        total_home_games=Count('home_games', filter=Q(home_games__game_date__year=year, 
+                                                    home_games__game_date__month=month), distinct=True),
+        total_away_games=Count('away_games', filter=Q(away_games__game_date__year=year, 
+                                                    away_games__game_date__month=month), distinct=True)
+    ).annotate(
         total_losses=F('total_games_played') - F('total_wins'),
         win_percentage=Case(
             When(total_games_played=0, then=Value(0.0)),
             default=F('total_wins') * 1.0 / F('total_games_played'),
             output_field=FloatField()
-        ),
-        total_home_games=Count(Case(
-            When(home_games__game_date__year=year, home_games__game_date__month=month, then=1),
-        )),
-        total_away_games=Count(Case(
-            When(away_games__game_date__year=year, away_games__game_date__month=month, then=1),
-        )),
+        )
     ).filter(total_games_played__gt=0).order_by('-win_percentage')
+    
+    return records
 
 def get_raw_sql(queryset):
     """Get the raw SQL for a queryset."""
