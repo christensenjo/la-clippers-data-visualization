@@ -71,3 +71,25 @@ Q: **What interests you about working for a basketball team? How do you think a 
 A: Since becoming obsessed with the NBA as a teenager, I've dreamed of working for an NBA team. This position with the LA Clippers would be the fulfillment of that dream. The joy that I feel from software development comes when I finally find the solution to a problem, and see the value the final product brings. I expect that joy to only be greater when it is within an industry and context that I am passionate about. 
 
 I also see this position in the front office as an opportunity for me to continue my pattern of accepting positions that challenge me and force me to grow. As mentioned before, the small size of the front office and fast pace at which decisions need to be made present an opportunity for me to learn quickly and push the limits of my ability to engineer efficiently.
+
+
+## Technical Questions
+
+1. **Database Creation**
+   a. My project is Dockerized. See instructions to run in the README.
+   b. The primary keys across the tables should be: 
+    - team table: `team_id` BigIntegerField in Django
+    - player table: `player_id` BigIntegerField in Django
+    - game_schedule: `game_id` BigIntegerField in Django
+    - lineup: Composite primary key of team, player, lineup_num, period, game. I implemented this in Django using the unique_together constraint on the model.
+    - roster: Composite primary key of team, player. Again implemented using the unique_together constraint.
+    - team_affiliate: nba_team. Implemented in Django model with a OneToOneField relation to Team model.
+2. **Basic Queries (SQL)**
+    a. I implemented this query in a Django ORM query. You can see it [here](https://github.com/christensenjo/la-clippers-data-visualization/blob/main/nba_data/queries.py).
+    b. Using Django backend and Vue frontend, I created an interactive table that displays the results of these queries. It can be sorted to rank teams by win %, home games, away games, and games played. It can also be filtered by month.
+
+I ran out of time to complete Schedule Queries, Lineup Queries, and Visualizations. Despite that, I really enjoyed this project. I look forward to continuing to extend this application in my free time in the future. Perhaps I'll take the time to complete the remaining queries and visualizations, or add something of my own liking.
+
+## Final Question
+
+I used AI extensively throughout this project. I created the Django app on my own, and wrote the ORM team record queries myself. I also wrote the Vue frontend and TailwindCSS styles myself. But along the way I used Cursor as my IDE, so I was constantly asking Claude or using Cursor to help me fix bugs. It was especially helpful in Dockerizing the project, and scaffolding Vite into my Django template so that I could use Vue for the frontend. While it is important to not rely on AI entirely for writing code or resolving issues, it can help us as developers to be faster and get started finding the answers to problems faster. In this case, I hadn't used Django in a couple of years, so it helped me accomplish a lot more in the time I had than I would've otherwise.

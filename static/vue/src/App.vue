@@ -6,8 +6,8 @@
         <h1 class="text-2xl font-bold">LA Clippers Basketball Full Stack Developer</h1>
         <nav>
           <ul class="flex space-x-4">
-            <li><a href="#" class="hover:text-[#D81D47] transition-colors">Questionnaire</a></li>
-            <li><a href="#" class="hover:text-[#D81D47] transition-colors">Instructions</a></li>
+            <li><a href="https://github.com/christensenjo/la-clippers-data-visualization/blob/main/questions.md" class="hover:text-[#D81D47] transition-colors">Questionnaire</a></li>
+            <li><a href="https://github.com/christensenjo/la-clippers-data-visualization/blob/main/README.md" class="hover:text-[#D81D47] transition-colors">Instructions</a></li>
           </ul>
         </nav>
       </div>
@@ -17,7 +17,7 @@
     <main class="container mx-auto px-4 py-8">
       <p class="text-gray-600 text-center mb-8 max-w-3xl mx-auto">Welcome to my application! You can view my questionaire answers 
       at the link in the navbar, and examine my SQL query results and data visualizations below! If you somehow haven't seen them 
-      yet, instructions for using this application are also linked above.</p>
+      yet, instructions for using this application are also linked above. I wasn't able to complete all of the challenges in the time I had, but I did get the Basic SQL query working in the form of this table.</p>
 
       <!-- Month Filter -->
       <div class="mb-4">
@@ -88,31 +88,6 @@
         </div>
       </div>
 
-      <!-- Placeholder for SQL query results -->
-      <div class="bg-white shadow-md rounded-lg p-6 mb-8">
-        <h3 class="text-xl font-semibold text-[#D81D47] mb-4">SQL Query Results</h3>
-        <div class="overflow-x-auto">
-          <table class="w-full table-auto">
-            <thead class="bg-[#0061A1] text-white">
-              <tr>
-                <th class="px-4 py-2">Column 1</th>
-                <th class="px-4 py-2">Column 2</th>
-                <th class="px-4 py-2">Column 3</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="border-b">
-                <td class="px-4 py-2">Data 1</td>
-                <td class="px-4 py-2">Data 2</td>
-                <td class="px-4 py-2">Data 3</td>
-              </tr>
-              <!-- Add more rows as needed -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Placeholder for data visualizations -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div class="bg-white shadow-md rounded-lg p-6">
           <h3 class="text-xl font-semibold text-[#D81D47] mb-4">Data Visualization 1</h3>
@@ -245,6 +220,6 @@ export default {
 
 .expand-enter-to,
 .expand-leave-from {
-  max-height: 1000px; /* Adjust this value based on your content */
+  max-height: 1000px;
 }
 </style>

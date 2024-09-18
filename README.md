@@ -1,6 +1,6 @@
 # LA Clippers Data Visualization 
 
-This project is a data visualization tool and related resources for applying to the LA Clippers Basketball Full-Stack Developer position.
+A data visualization tool and related resources for applying to the LA Clippers Basketball Full-Stack Developer position.
 
 ## Run locally
 
