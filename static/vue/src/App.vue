@@ -19,40 +19,72 @@
       at the link in the navbar, and examine my SQL query results and data visualizations below! If you somehow haven't seen them 
       yet, instructions for using this application are also linked above.</p>
 
+      <!-- Month Filter -->
+      <div class="mb-4">
+        <label for="month-select" class="mr-2">Filter by month:</label>
+        <select id="month-select" v-model="selectedMonth" @change="fetchTeamRecords" class="p-2 border rounded">
+          <option value="">All Time</option>
+          <option v-for="month in availableMonths" :key="month.value" :value="month.value">
+            {{ month.label }}
+          </option>
+        </select>
+      </div>
+
       <!-- Team Records Table -->
       <div class="bg-white shadow-md rounded-lg p-6 mb-8">
         <h3 class="text-xl font-semibold text-[#D81D47] mb-4">Team Records</h3>
+        <p class="text-gray-400 mb-4">Click on a column header to rank by that column.</p>
         <div class="overflow-x-auto">
           <table class="w-full table-auto">
             <thead class="bg-[#0061A1] text-white text-left">
               <tr>
                 <th class="px-4 py-2"></th>
                 <th class="px-4 py-2">Team</th>
-                <th @click="toggleSort" class="px-4 py-2 cursor-pointer inline-flex">
+                <th @click="toggleSort('win_percentage')" class="px-4 py-2 cursor-pointer hover:text-slate-300">
                   Win % 
-                  <span v-if="sortAscending" class="text-white hover:text-gray-300"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg></span>
-                  <span v-else class="text-white hover:text-gray-300"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg></span>
+                  <SortIcon v-if="sortColumn === 'win_percentage'" :active="sortColumn === 'win_percentage'" :ascending="sortAscending" />
                 </th>
                 <th class="px-4 py-2">Wins</th>
                 <th class="px-4 py-2">Losses</th>
-                <th class="px-4 py-2">Games Played</th>
-                <th class="px-4 py-2">Home Games</th>
-                <th class="px-4 py-2">Away Games</th>
+                <th @click="toggleSort('total_home_games')" class="px-4 py-2 cursor-pointer hover:text-slate-300">
+                  Home Games
+                  <SortIcon v-if="sortColumn === 'total_home_games'" :ascending="sortAscending" :active="sortColumn === 'home'" />
+                </th>
+                <th @click="toggleSort('total_away_games')" class="px-4 py-2 cursor-pointer hover:text-slate-300">
+                  Away Games
+                  <SortIcon v-if="sortColumn === 'total_away_games'" :ascending="sortAscending" :active="sortColumn === 'away'" />
+                </th>
+                <th @click="toggleSort('total_games_played')" class="px-4 py-2 cursor-pointer hover:text-slate-300">
+                  Games Played
+                  <SortIcon v-if="sortColumn === 'total_games_played'" :ascending="sortAscending" :active="sortColumn === 'games'" />
+                </th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(record, index) in sortedTeamRecords" :key="record.team_name" class="border-b">
-                <td class="px-4 py-2">{{ sortAscending ? teamRecords.length - index : index + 1 }}</td>
+                <td class="px-4 py-2 font-bold">{{ index + 1 }}</td>
                 <td class="px-4 py-2">{{ record.team_name }}</td>
                 <td class="px-4 py-2">{{ (record.win_percentage * 100).toFixed(1) }}%</td>
                 <td class="px-4 py-2">{{ record.total_wins }}</td>
                 <td class="px-4 py-2">{{ record.total_losses }}</td>
-                <td class="px-4 py-2">{{ record.total_games_played }}</td>
                 <td class="px-4 py-2">{{ record.total_home_games }}</td>
                 <td class="px-4 py-2">{{ record.total_away_games }}</td>
+                <td class="px-4 py-2">{{ record.total_games_played }}</td>
               </tr>
             </tbody>
           </table>
+        </div>
+        <!-- SQL Query Section -->
+        <div class="mt-4">
+          <button @click="toggleSqlQuery" class="flex items-center text-[#0061A1] hover:text-[#D81D47] transition-colors">
+            <span class="mr-2">{{ showSqlQuery ? '▼' : '▶' }}</span>
+            <span>See SQL Query</span>
+          </button>
+          <transition name="expand">
+            <pre v-if="showSqlQuery" class="mt-2 p-4 bg-gray-100 rounded-md overflow-x-auto text-black">
+              <code>{{ sqlQuery }}</code>
+            </pre>
+          </transition>
         </div>
       </div>
 
@@ -96,44 +128,123 @@
 </template>
 
 <script>
+import SortIcon from './components/SortIcon.vue'
+import { ref } from 'vue';
+
 export default {
   name: 'App',
+  components: {
+    SortIcon
+  },
+  setup() {
+    const showSqlQuery = ref(false);
+    const sqlQuery = ref('');
+    const selectedMonth = ref('');
+    const availableMonths = ref([]);
+
+    return {
+      showSqlQuery,
+      sqlQuery,
+      selectedMonth,
+      availableMonths,
+    };
+  },
   data() {
     return {
       teamRecords: [],
-      sortAscending: false
+      sortColumn: 'win_percentage',
+      sortAscending: false,
     }
   },
   computed: {
     sortedTeamRecords() {
       return [...this.teamRecords].sort((a, b) => {
-        return this.sortAscending 
-          ? a.win_percentage - b.win_percentage
-          : b.win_percentage - a.win_percentage;
+        const modifier = this.sortAscending ? 1 : -1;
+        if (a[this.sortColumn] < b[this.sortColumn]) return -1 * modifier;
+        if (a[this.sortColumn] > b[this.sortColumn]) return 1 * modifier;
+        return 0;
       });
     }
   },
   mounted() {
-    this.fetchTeamRecords()
+    this.fetchAvailableMonths();
+    this.fetchTeamRecords();
+    this.fetchSqlQuery();
   },
   methods: {
-    async fetchTeamRecords() {
+    async fetchAvailableMonths() {
       try {
-        const response = await fetch('/api/team-records/')
+        const response = await fetch('/api/available-months/');
         if (!response.ok) {
-          throw new Error('Network response was not ok')
+          throw new Error('Network response was not ok');
         }
-        this.teamRecords = await response.json()
+        this.availableMonths = await response.json();
       } catch (error) {
-        console.error('Error fetching team records:', error)
+        console.error('Error fetching available months:', error);
       }
     },
-    toggleSort() {
-      this.sortAscending = !this.sortAscending;
+    async fetchTeamRecords() {
+      try {
+        let url = '/api/team-records/';
+        if (this.selectedMonth) {
+          const [year, month] = this.selectedMonth.split('-');
+          url += `?year=${year}&month=${month}`;
+        }
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        this.teamRecords = await response.json();
+      } catch (error) {
+        console.error('Error fetching team records:', error);
+      }
+    },
+    async fetchSqlQuery() {
+      try {
+        let url = '/api/team-records-sql/';
+        if (this.selectedMonth) {
+          const [year, month] = this.selectedMonth.split('-');
+          url += `?year=${year}&month=${month}`;
+        }
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        this.sqlQuery = data.sql_query;
+      } catch (error) {
+        console.error('Error fetching SQL query:', error);
+      }
+    },
+    toggleSort(column) {
+      if (this.sortColumn === column) {
+        this.sortAscending = !this.sortAscending;
+      } else {
+        this.sortColumn = column;
+        this.sortAscending = false;
+      }
+    },
+    toggleSqlQuery() {
+      this.showSqlQuery = !this.showSqlQuery;
     }
   }
 }
 </script>
 
 <style>
+.expand-enter-active,
+.expand-leave-active {
+  transition: max-height 0.3s ease-in-out;
+  overflow: hidden;
+}
+
+.expand-enter-from,
+.expand-leave-to {
+  max-height: 0;
+}
+
+.expand-enter-to,
+.expand-leave-from {
+  max-height: 1000px; /* Adjust this value based on your content */
+}
 </style>

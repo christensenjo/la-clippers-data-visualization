@@ -7,6 +7,9 @@ class Team(models.Model):
     team_name_short = models.CharField(max_length=4)
     team_nickname = models.CharField(max_length=50)
 
+    class Meta:
+        db_table = 'team'
+
     def __str__(self):
         return self.team_name
 
@@ -14,6 +17,9 @@ class Player(models.Model):
     player_id = models.BigIntegerField(primary_key=True)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
+
+    class Meta:
+        db_table = 'player'
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -25,6 +31,9 @@ class GameSchedule(models.Model):
     home_score = models.IntegerField()
     away_score = models.IntegerField()
     game_date = models.DateTimeField()
+
+    class Meta:
+        db_table = 'game_schedule'
 
     def __str__(self):
         return f"Game {self.game_id}: {self.home} vs {self.away} on {self.game_date}"
@@ -39,6 +48,7 @@ class Lineup(models.Model):
     game = models.ForeignKey(GameSchedule, on_delete=models.CASCADE)
 
     class Meta:
+        db_table = 'lineup'
         unique_together = ('team', 'player', 'lineup_num', 'period', 'game')
 
     def __str__(self):
@@ -51,6 +61,7 @@ class Roster(models.Model):
     contract_type = models.CharField(max_length=20)
 
     class Meta:
+        db_table = 'roster'
         unique_together = ('team', 'player')
 
     def __str__(self):
@@ -61,6 +72,9 @@ class TeamAffiliate(models.Model):
     nba_abrv = models.CharField(max_length=3)
     glg_team_id = models.BigIntegerField(null=True, blank=True)  # Not all NBA teams have a G League affiliate
     glg_abrv = models.CharField(max_length=3, null=True, blank=True)
+
+    class Meta:
+        db_table = 'team_affiliate'
 
     def __str__(self):
         return f"{self.nba_abrv} - {self.glg_abrv or 'No G League Affiliate'}"

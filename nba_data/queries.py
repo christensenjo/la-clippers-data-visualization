@@ -1,4 +1,4 @@
-from django.db.models import Count, F, Window, Case, When, Value, IntegerField, FloatField
+from django.db.models import Count, F, Window, Case, When, Value, IntegerField, FloatField, Func
 from django.db.models.functions import DenseRank
 from .models import Team, GameSchedule
 from django.db import connection
@@ -6,32 +6,21 @@ from django.http import JsonResponse
 
 def get_team_records():
     return Team.objects.annotate(
-        total_games_played=Count('home_games') + Count('away_games'),
+        total_games_played=Count('home_games', distinct=True) + Count('away_games', distinct=True),
         total_wins=Count(Case(
             When(home_games__home_score__gt=F('home_games__away_score'), then=1),
             When(away_games__away_score__gt=F('away_games__home_score'), then=1),
-        )),
+        ), distinct=True),
+        total_home_games=Count('home_games', distinct=True),
+        total_away_games=Count('away_games', distinct=True),
+    ).annotate(
         total_losses=F('total_games_played') - F('total_wins'),
         win_percentage=Case(
             When(total_games_played=0, then=Value(0.0)),
             default=F('total_wins') * 1.0 / F('total_games_played'),
             output_field=FloatField()
         ),
-        total_home_games=Count('home_games'),
-        total_away_games=Count('away_games'),
-        games_played_rank=Window(
-            expression=DenseRank(),
-            order_by=F('total_games_played').desc()
-        ),
-        home_games_rank=Window(
-            expression=DenseRank(),
-            order_by=F('total_home_games').desc()
-        ),
-        away_games_rank=Window(
-            expression=DenseRank(),
-            order_by=F('total_away_games').desc()
-        )
-    ).order_by('-win_percentage')
+    ).filter(total_games_played__gt=0).order_by('-win_percentage')
 
 def get_team_records_for_month(year, month):
     return Team.objects.annotate(
@@ -57,26 +46,14 @@ def get_team_records_for_month(year, month):
         total_away_games=Count(Case(
             When(away_games__game_date__year=year, away_games__game_date__month=month, then=1),
         )),
-        games_played_rank=Window(
-            expression=DenseRank(),
-            order_by=F('total_games_played').desc()
-        ),
-        home_games_rank=Window(
-            expression=DenseRank(),
-            order_by=F('total_home_games').desc()
-        ),
-        away_games_rank=Window(
-            expression=DenseRank(),
-            order_by=F('total_away_games').desc()
-        )
-    ).order_by('-win_percentage')
+    ).filter(total_games_played__gt=0).order_by('-win_percentage')
 
 def get_raw_sql(queryset):
     """Get the raw SQL for a queryset."""
     return str(queryset.query)
 
 def get_team_records_sql():
-    """Raw SQL query for team records and rankings."""
+    """Raw SQL query for team records."""
     sql = """
     WITH team_stats AS (
         SELECT 
@@ -98,26 +75,25 @@ def get_team_records_sql():
     )
     SELECT 
         team_name,
-        games_played,
-        wins,
-        (games_played - wins) as losses,
+        games_played as total_games_played,
+        wins as total_wins,
+        (games_played - wins) as total_losses,
         CASE WHEN games_played = 0 THEN 0
             ELSE CAST(wins AS FLOAT) / games_played 
         END as win_percentage,
-        home_games,
-        away_games,
-        DENSE_RANK() OVER (ORDER BY games_played DESC) as games_played_rank,
-        DENSE_RANK() OVER (ORDER BY home_games DESC) as home_games_rank,
-        DENSE_RANK() OVER (ORDER BY away_games DESC) as away_games_rank
+        home_games as total_home_games,
+        away_games as total_away_games
     FROM 
         team_stats
+    WHERE 
+        games_played > 0
     ORDER BY 
         win_percentage DESC;
     """
     return sql
 
 def get_team_records_for_month_sql(year, month):
-    """Raw SQL query for team records and rankings for a specific month."""
+    """Raw SQL query for team records for a specific month."""
     sql = f"""
     WITH team_stats AS (
         SELECT 
@@ -149,19 +125,18 @@ def get_team_records_for_month_sql(year, month):
     )
     SELECT 
         team_name,
-        games_played,
-        wins,
-        (games_played - wins) as losses,
+        games_played as total_games_played,
+        wins as total_wins,
+        (games_played - wins) as total_losses,
         CASE WHEN games_played = 0 THEN 0
             ELSE CAST(wins AS FLOAT) / games_played 
         END as win_percentage,
-        home_games,
-        away_games,
-        DENSE_RANK() OVER (ORDER BY games_played DESC) as games_played_rank,
-        DENSE_RANK() OVER (ORDER BY home_games DESC) as home_games_rank,
-        DENSE_RANK() OVER (ORDER BY away_games DESC) as away_games_rank
+        home_games as total_home_games,
+        away_games as total_away_games
     FROM 
         team_stats
+    WHERE 
+        games_played > 0
     ORDER BY 
         win_percentage DESC;
     """
@@ -178,6 +153,12 @@ def team_records_api(request):
     records = get_team_records()
     data = list(records.values(
         'team_name', 'total_games_played', 'total_wins', 'total_losses', 'win_percentage',
-        'total_home_games', 'total_away_games', 'games_played_rank', 'home_games_rank', 'away_games_rank'
+        'total_home_games', 'total_away_games'
     ))
     return JsonResponse(data, safe=False)
+
+def get_available_months():
+    return GameSchedule.objects.annotate(
+        year=Func(F('game_date'), function='EXTRACT', template='EXTRACT(YEAR FROM %(expressions)s)', output_field=IntegerField()),
+        month=Func(F('game_date'), function='EXTRACT', template='EXTRACT(MONTH FROM %(expressions)s)', output_field=IntegerField())
+    ).values('year', 'month').distinct().order_by('-year', '-month')
