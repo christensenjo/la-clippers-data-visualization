@@ -2,6 +2,8 @@
 
 A data visualization tool and related resources for applying to the LA Clippers Basketball Full-Stack Developer position.
 
+See [questions.md](questions.md) for my responses to the questionaire.
+
 ## Run locally
 
 ### Setup .env
