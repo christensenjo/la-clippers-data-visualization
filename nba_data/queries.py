@@ -10,20 +10,19 @@ logger = logging.getLogger(__name__)
 
 def get_team_records():
     return Team.objects.annotate(
-        total_games_played=Count('home_games', distinct=True) + Count('away_games', distinct=True),
-        total_wins=Count(Case(
-            When(home_games__home_score__gt=F('home_games__away_score'), then=1),
-            When(away_games__away_score__gt=F('away_games__home_score'), then=1),
-        ), distinct=True),
+        total_games_played=Count('home_games', distinct=True) + 
+                        Count('away_games', distinct=True),
+        total_wins=Count('home_games', filter=Q(home_games__home_score__gt=F('home_games__away_score')), distinct=True) + 
+                Count('away_games', filter=Q(away_games__away_score__gt=F('away_games__home_score')), distinct=True),
         total_home_games=Count('home_games', distinct=True),
-        total_away_games=Count('away_games', distinct=True),
+        total_away_games=Count('away_games', distinct=True)
     ).annotate(
         total_losses=F('total_games_played') - F('total_wins'),
         win_percentage=Case(
             When(total_games_played=0, then=Value(0.0)),
             default=F('total_wins') * 1.0 / F('total_games_played'),
             output_field=FloatField()
-        ),
+        )
     ).filter(total_games_played__gt=0).order_by('-win_percentage')
 
 def get_team_records_for_month(year, month):
